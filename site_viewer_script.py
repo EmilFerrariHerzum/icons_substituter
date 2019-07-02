@@ -7,13 +7,16 @@ import time
 import re
 import os
 
-url = "https://busyliving.co.uk/"
+url = "https://busyliving.co.uk"
 username = config("login_username")
 password = config("password")
+profile = webdriver.Chrome()
 
 # Log in to the site and get the source code
 def site_login(URL):
-    driver = webdriver.Chrome("C:/Users/emilf/Downloads/chromedriver.exe") 
+    driver = webdriver.Chrome()
+    driver.set_window_position(0, 0)
+    driver.set_window_size(1024, 1024)
     driver.get (URL)
     time.sleep(5)
     driver.find_element_by_class_name('cc-dismiss').click()
@@ -47,13 +50,13 @@ def finder(html):
 
 # Define the path to the files
 directory = "s3://busyliving"
-local = "C:\\Users\\emilf\\Downloads\\Ringley\\Images\\"
-files_names = os.listdir("C:\\Users\\emilf\\Downloads\\Ringley\\Images\\")
+local = "images/"
+files_names = os.listdir(local)
 grant = " --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
 
 # Change the file
 def name_changer(temp_item):
-    print(f"\nWith which file do you want to replace it with? (enter the name of the file comprehensive of the extension and be wary of caps lock)\n")
+    print(f"\n{files_names}\nWith which file do you want to replace it with? (enter the name of the file comprehensive of the extension and be wary of caps lock)\n")
     sub_item = input()
     if (sub_item == "skip"):
         # put stuff thats missing
@@ -61,21 +64,25 @@ def name_changer(temp_item):
     while sub_item not in files_names:
             print("\nThe name of the file is wrong\n")
             sub_item = input()
-    os.popen(f'aws s3 cp {local}{sub_item} {directory}{temp_item[0]}')
+    print(f'aws s3 cp "{local}{sub_item}" "{directory}{temp_item[0]}"')
+    # os.popen(f'aws s3 cp "{local}{sub_item}" "{directory}{temp_item[0]}"')
     print(f"\nThe picture has been replaced by {sub_item}\n\n\n")
     # Create a text file containing all the names of the files that are replaced
-    with open('substituted_files.txt', 'w') as filehandle:  
+    with open('substituted_files.txt', 'a') as filehandle:  
         filehandle.write('%s\n' %sub_item)
 
 # Function that does it all
 def replace(listings):
     for i in listings:
         print(f"\nThis picture is listed as {i.title[0]} on the website and the file is called {i.file[0]}\n")
-        driver = webdriver.Chrome("C:/Users/emilf/Downloads/chromedriver.exe") 
+        driver = webdriver.Chrome()
+        driver.set_window_position(0, 0)
+        driver.set_window_size(1024, 1024)
         driver.get(i.picture[0])
         temp_item = re.findall(r'com(.*/.*png)', i.picture[0])
         name_changer(temp_item)
         driver.close()
 
 # Runs the program
-replace(finder(site_login(url)))
+listings = finder(site_login(url))
+replace(listings)
