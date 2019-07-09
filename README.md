@@ -3,8 +3,9 @@ It's a small python script that scrapes the icons from a specific dashboard in o
 with new ones, chosen manually by the user.
 
 ## Contributing
-It's really just the first python script I made concerning web scraping and interaction with AWS. Not looking for any
-contributors.
+It's really just the first python script I made concerning web scraping and interaction with AWS. 
+<br>
+Not looking for contributors.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
